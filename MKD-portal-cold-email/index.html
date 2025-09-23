@@ -331,11 +331,8 @@
         <div class="modal-content">
             <h3 class="modal-title">Verify Access</h3>
             <div class="captcha-container">
-                <div class="captcha-checkbox-container">
-                    <input type="checkbox" id="modalCaptcha" class="captcha-checkbox">
-                    <span class="captcha-text">I'm not a robot</span>
-                </div>
-                <div class="captcha-logo">reCAPTCHA</div>
+                <!-- Cloudflare Turnstile Widget -->
+                <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
             </div>
             <div class="modal-buttons">
                 <button class="modal-btn btn-cancel" onclick="closeVerificationModal()">Cancel</button>
@@ -343,6 +340,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <!-- Tawk.to Chat Widget -->
     <script type="text/javascript">
@@ -358,7 +358,7 @@
         var s1 = document.createElement("script");
         var s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
-        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_WIDGET_ID';
+        s1.src = 'https://embed.tawk.to/68d332e759e35019234b11a0/1j5sftlrl';
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin','*');
         s0.parentNode.insertBefore(s1, s0);
@@ -368,52 +368,101 @@
     <script>
         // Verification functionality
         let isVerified = false;
+        let turnstileToken = null;
 
         function openVerificationModal() {
             if (!isVerified) {
                 document.getElementById('verificationModal').style.display = 'block';
+                // Reset Turnstile when modal opens
+                if (window.turnstile) {
+                    window.turnstile.reset();
+                }
             }
         }
 
         function closeVerificationModal() {
             document.getElementById('verificationModal').style.display = 'none';
-            document.getElementById('modalCaptcha').checked = false;
             document.getElementById('verifyBtn').disabled = true;
+            turnstileToken = null;
         }
 
-        // Enable verify button when checkbox is checked
-        document.getElementById('modalCaptcha').addEventListener('change', function() {
-            document.getElementById('verifyBtn').disabled = !this.checked;
-        });
+        // Turnstile callback functions
+        window.onTurnstileSuccess = function(token) {
+            turnstileToken = token;
+            document.getElementById('verifyBtn').disabled = false;
+        };
 
-        function completeVerification() {
-            if (document.getElementById('modalCaptcha').checked) {
+        window.onTurnstileError = function() {
+            turnstileToken = null;
+            document.getElementById('verifyBtn').disabled = true;
+        };
+
+        window.onTurnstileExpired = function() {
+            turnstileToken = null;
+            document.getElementById('verifyBtn').disabled = true;
+        };
+
+        async function completeVerification() {
+            if (!turnstileToken) {
+                alert('Please complete the verification challenge');
+                return;
+            }
+
+            try {
+                // Verify token with your backend (optional)
+                const response = await fetch('YOUR_VERIFICATION_ENDPOINT', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        token: turnstileToken,
+                        action: 'client_portal_access'
+                    })
+                });
+
+                if (response.ok) {
+                    isVerified = true;
+                    
+                    // Update UI
+                    document.getElementById('accessCheck').checked = true;
+                    document.getElementById('statusMessage').textContent = 'Verification complete - Chat support is now available';
+                    document.getElementById('statusMessage').className = 'status-message status-verified';
+                    document.getElementById('chatSection').classList.add('enabled');
+                    
+                    // Show Tawk widget
+                    if (typeof Tawk_API !== 'undefined') {
+                        Tawk_API.showWidget();
+                    }
+                    
+                    // Close modal
+                    closeVerificationModal();
+                    
+                    // Send verification event to n8n
+                    fetch('YOUR_N8N_WEBHOOK_URL', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            event: 'client_verified',
+                            timestamp: new Date().toISOString(),
+                            userAgent: navigator.userAgent,
+                            turnstileToken: turnstileToken
+                        })
+                    });
+                } else {
+                    alert('Verification failed. Please try again.');
+                }
+            } catch (error) {
+                // For demo purposes, allow verification without backend
                 isVerified = true;
-                
-                // Update UI
                 document.getElementById('accessCheck').checked = true;
                 document.getElementById('statusMessage').textContent = 'Verification complete - Chat support is now available';
                 document.getElementById('statusMessage').className = 'status-message status-verified';
                 document.getElementById('chatSection').classList.add('enabled');
                 
-                // Show Tawk widget
                 if (typeof Tawk_API !== 'undefined') {
                     Tawk_API.showWidget();
                 }
                 
-                // Close modal
                 closeVerificationModal();
-                
-                // Optional: Send verification event to n8n
-                // fetch('YOUR_N8N_WEBHOOK_URL', {
-                //     method: 'POST',
-                //     headers: {'Content-Type': 'application/json'},
-                //     body: JSON.stringify({
-                //         event: 'client_verified',
-                //         timestamp: new Date().toISOString(),
-                //         userAgent: navigator.userAgent
-                //     })
-                // });
             }
         }
 

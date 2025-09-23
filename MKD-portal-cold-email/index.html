@@ -30,254 +30,399 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 1rem 0;
+            margin-bottom: 2rem;
         }
 
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
             color: #667eea;
-            text-decoration: none;
-        }
-
-        main {
-            margin-top: 80px;
-            padding: 4rem 0;
+            text-align: center;
         }
 
         .portal-section {
             background: rgba(255, 255, 255, 0.95);
-            margin: 2rem 0;
+            padding: 3rem 2rem;
             border-radius: 15px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .portal-section h1 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 2.5rem;
-        }
-
-        .portal-section p {
             margin-bottom: 2rem;
+        }
+
+        .portal-title {
+            color: #667eea;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .portal-description {
+            text-align: center;
             font-size: 1.1rem;
             color: #666;
-        }
-
-        #chat-container {
-            position: relative;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            min-height: 500px;
-            background: #f8f9fa;
-            margin: 2rem 0;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .verification-section {
-            margin-top: 2rem;
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
             text-align: center;
-            background: #f0f4ff;
-            padding: 1.5rem;
+        }
+
+        .verification-title {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .verification-container {
+            display: inline-block;
+            background: white;
+            padding: 1rem 2rem;
             border-radius: 8px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .verification-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
         }
 
         .verification-checkbox {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .verification-checkbox input[type="checkbox"] {
+            margin-right: 0.5rem;
             transform: scale(1.2);
+        }
+
+        .verification-label {
+            font-size: 1rem;
+            color: #333;
             cursor: pointer;
         }
 
-        .verification-checkbox label {
-            cursor: pointer;
-            font-weight: 500;
-            user-select: none;
-        }
-
-        .access-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            z-index: 10;
-        }
-
-        .overlay-content {
-            text-align: center;
-            color: #667eea;
+        .chat-section {
+            background: white;
             padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.5s ease;
         }
 
-        .overlay-content .lock-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .chat-section.enabled {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .overlay-content h3 {
-            margin-bottom: 1rem;
+        .chat-title {
             color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
         }
 
-        .overlay-content p {
-            color: #666;
-            max-width: 300px;
+        .chat-notice {
+            background: #e8f4fd;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         footer {
             background: rgba(255, 255, 255, 0.95);
             text-align: center;
-            padding: 2rem 0;
+            padding: 1.5rem 0;
             margin-top: 2rem;
             border-radius: 15px;
+            color: #666;
+        }
+
+        /* Popup Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-title {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .captcha-container {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            background: #f9f9f9;
+        }
+
+        .captcha-checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .captcha-checkbox {
+            margin-right: 0.5rem;
+            transform: scale(1.3);
+        }
+
+        .captcha-text {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .captcha-logo {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-verify {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-verify:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-verify:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
         }
 
         @media (max-width: 768px) {
-            .portal-section {
-                padding: 2rem 1rem;
-            }
-            
-            .portal-section h1 {
+            .portal-title {
                 font-size: 2rem;
             }
             
-            #chat-container {
-                min-height: 400px;
+            .modal-content {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <nav class="container">
-            <a href="#" class="logo">Dustyomatic Client Portal</a>
-        </nav>
+        <div class="container">
+            <div class="logo">Dustyomatic</div>
+        </div>
     </header>
 
     <main>
-        <section class="portal-section">
-            <div class="container">
-                <h1>Welcome to Client Support</h1>
-                <p>Use the chat interface below for support, updates, and automation assistance.</p>
+        <div class="container">
+            <section class="portal-section">
+                <h1 class="portal-title">Client Portal</h1>
+                <p class="portal-description">
+                    Welcome to the Dustyomatic client support portal. Existing clients can access support and automation assistance through the chat interface below.
+                </p>
                 
-                <!-- Chat Container with Crisp Integration -->
-                <div id="chat-container">
-                    <!-- Access Overlay (shown by default) -->
-                    <div id="access-overlay" class="access-overlay">
-                        <div class="overlay-content">
-                            <div class="lock-icon">🔒</div>
-                            <h3>Verification Required</h3>
-                            <p>Please complete the verification below to access the client portal chat.</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat will be injected here by Crisp when verified -->
-                    <div id="crisp-chat-area" style="height: 100%; padding: 2rem; display: none;">
-                        <div style="text-align: center; padding-top: 4rem;">
-                            <div style="font-size: 2rem; margin-bottom: 1rem; color: #667eea;">💬</div>
-                            <h3 style="color: #667eea; margin-bottom: 1rem;">Chat Support Active</h3>
-                            <p style="color: #666;">You can now use the Crisp chat widget (bottom right) to communicate with support.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Verification Section -->
                 <div class="verification-section">
-                    <div class="verification-checkbox">
-                        <input type="checkbox" id="robotCheck" onchange="toggleAccess()">
-                        <label for="robotCheck">I am not a robot</label>
+                    <h3 class="verification-title">Access Verification Required</h3>
+                    <div class="verification-container" onclick="openVerificationModal()">
+                        <input type="checkbox" class="verification-checkbox" id="accessCheck" disabled>
+                        <label for="accessCheck" class="verification-label">I am not a robot</label>
                     </div>
-                    <p><strong>Note:</strong> This portal is for existing clients only. New inquiries should be made through established communication channels.</p>
+                    <div id="statusMessage" class="status-message status-pending">
+                        Please complete verification to access chat support
+                    </div>
                 </div>
-            </div>
-        </section>
+
+                <div id="chatSection" class="chat-section">
+                    <h3 class="chat-title">Client Support Chat</h3>
+                    <div class="chat-notice">
+                        <strong>Chat Support Available:</strong> Connect with our automation specialists for workflow assistance, troubleshooting, and updates on your n8n automations.
+                    </div>
+                    <!-- Tawk.to chat widget will appear here automatically once verification is complete -->
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Dustyomatic. Client Portal - Secure Communication</p>
+            <p>&copy; 2025 Dustyomatic. Client Portal - Authorized Access Only</p>
         </div>
     </footer>
 
-    <!-- Crisp Chat Widget -->
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Verify Access</h3>
+            <div class="captcha-container">
+                <div class="captcha-checkbox-container">
+                    <input type="checkbox" id="modalCaptcha" class="captcha-checkbox">
+                    <span class="captcha-text">I'm not a robot</span>
+                </div>
+                <div class="captcha-logo">reCAPTCHA</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" onclick="closeVerificationModal()">Cancel</button>
+                <button class="modal-btn btn-verify" id="verifyBtn" onclick="completeVerification()" disabled>Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tawk.to Chat Widget -->
     <script type="text/javascript">
-        window.$crisp = [];
-        window.CRISP_WEBSITE_ID = "YOUR_CRISP_WEBSITE_ID"; // Replace with your actual Crisp Website ID
-        
-        function toggleAccess() {
-            const checkbox = document.getElementById('robotCheck');
-            const overlay = document.getElementById('access-overlay');
-            const chatArea = document.getElementById('crisp-chat-area');
-            
-            if (checkbox.checked) {
-                // Hide overlay and show chat
-                overlay.style.display = 'none';
-                chatArea.style.display = 'block';
-                
-                // Initialize Crisp chat after verification
-                if (!window.CRISP_LOADED) {
-                    loadCrispChat();
-                    window.CRISP_LOADED = true;
-                }
-                
-                // Show Crisp chat widget
-                if (window.$crisp) {
-                    window.$crisp.push(["do", "chat:show"]);
-                }
-            } else {
-                // Show overlay and hide chat
-                overlay.style.display = 'flex';
-                chatArea.style.display = 'none';
-                
-                // Hide Crisp chat widget
-                if (window.$crisp) {
-                    window.$crisp.push(["do", "chat:hide"]);
-                }
+    var Tawk_API = Tawk_API || {};
+    var Tawk_LoadStart = new Date();
+    
+    // Initially hide Tawk widget
+    Tawk_API.onLoad = function(){
+        Tawk_API.hideWidget();
+    };
+
+    (function(){
+        var s1 = document.createElement("script");
+        var s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_WIDGET_ID';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1, s0);
+    })();
+    </script>
+
+    <script>
+        // Verification functionality
+        let isVerified = false;
+
+        function openVerificationModal() {
+            if (!isVerified) {
+                document.getElementById('verificationModal').style.display = 'block';
             }
         }
-        
-        function loadCrispChat() {
-            (function() {
-                var d = document;
-                var s = d.createElement("script");
-                s.src = "https://client.crisp.chat/l.js";
-                s.async = 1;
-                d.getElementsByTagName("head")[0].appendChild(s);
-            })();
+
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            document.getElementById('modalCaptcha').checked = false;
+            document.getElementById('verifyBtn').disabled = true;
         }
-        
-        // Configure Crisp after it loads
-        window.$crisp.push(["ready", function() {
-            // Start hidden until verification
-            window.$crisp.push(["do", "chat:hide"]);
-            
-            // Set custom configuration
-            window.$crisp.push(["set", "session:segments", [["client-portal"]]]);
-            window.$crisp.push(["set", "user:company", "Dustyomatic Client"]);
-        }]);
+
+        // Enable verify button when checkbox is checked
+        document.getElementById('modalCaptcha').addEventListener('change', function() {
+            document.getElementById('verifyBtn').disabled = !this.checked;
+        });
+
+        function completeVerification() {
+            if (document.getElementById('modalCaptcha').checked) {
+                isVerified = true;
+                
+                // Update UI
+                document.getElementById('accessCheck').checked = true;
+                document.getElementById('statusMessage').textContent = 'Verification complete - Chat support is now available';
+                document.getElementById('statusMessage').className = 'status-message status-verified';
+                document.getElementById('chatSection').classList.add('enabled');
+                
+                // Show Tawk widget
+                if (typeof Tawk_API !== 'undefined') {
+                    Tawk_API.showWidget();
+                }
+                
+                // Close modal
+                closeVerificationModal();
+                
+                // Optional: Send verification event to n8n
+                // fetch('YOUR_N8N_WEBHOOK_URL', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify({
+                //         event: 'client_verified',
+                //         timestamp: new Date().toISOString(),
+                //         userAgent: navigator.userAgent
+                //     })
+                // });
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('verificationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVerificationModal();
+            }
+        });
     </script>
 </body>
 </html>

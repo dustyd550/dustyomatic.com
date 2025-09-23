@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <title>Dustyomatic - Client Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        main {
+            margin-top: 80px;
+            padding: 4rem 0;
+        }
+
+        .portal-section {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .portal-section h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .portal-section p {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        #chat-container {
+            position: relative;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            min-height: 500px;
+            background: #f8f9fa;
+            margin: 2rem 0;
+        }
+
+        .verification-section {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f0f4ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .verification-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .verification-checkbox input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .verification-checkbox label {
+            cursor: pointer;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .access-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            z-index: 10;
+        }
+
+        .overlay-content {
+            text-align: center;
+            color: #667eea;
+            padding: 2rem;
+        }
+
+        .overlay-content .lock-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .overlay-content h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .overlay-content p {
+            color: #666;
+            max-width: 300px;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .portal-section {
+                padding: 2rem 1rem;
+            }
+            
+            .portal-section h1 {
+                font-size: 2rem;
+            }
+            
+            #chat-container {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">Dustyomatic Client Portal</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="portal-section">
+            <div class="container">
+                <h1>Welcome to Client Support</h1>
+                <p>Use the chat interface below for support, updates, and automation assistance.</p>
+                
+                <!-- Chat Container with Crisp Integration -->
+                <div id="chat-container">
+                    <!-- Access Overlay (shown by default) -->
+                    <div id="access-overlay" class="access-overlay">
+                        <div class="overlay-content">
+                            <div class="lock-icon">🔒</div>
+                            <h3>Verification Required</h3>
+                            <p>Please complete the verification below to access the client portal chat.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat will be injected here by Crisp when verified -->
+                    <div id="crisp-chat-area" style="height: 100%; padding: 2rem; display: none;">
+                        <div style="text-align: center; padding-top: 4rem;">
+                            <div style="font-size: 2rem; margin-bottom: 1rem; color: #667eea;">💬</div>
+                            <h3 style="color: #667eea; margin-bottom: 1rem;">Chat Support Active</h3>
+                            <p style="color: #666;">You can now use the Crisp chat widget (bottom right) to communicate with support.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Verification Section -->
+                <div class="verification-section">
+                    <div class="verification-checkbox">
+                        <input type="checkbox" id="robotCheck" onchange="toggleAccess()">
+                        <label for="robotCheck">I am not a robot</label>
+                    </div>
+                    <p><strong>Note:</strong> This portal is for existing clients only. New inquiries should be made through established communication channels.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Dustyomatic. Client Portal - Secure Communication</p>
+        </div>
+    </footer>
+
+    <!-- Crisp Chat Widget -->
+    <script type="text/javascript">
+        window.$crisp = [];
+        window.CRISP_WEBSITE_ID = "YOUR_CRISP_WEBSITE_ID"; // Replace with your actual Crisp Website ID
+        
+        function toggleAccess() {
+            const checkbox = document.getElementById('robotCheck');
+            const overlay = document.getElementById('access-overlay');
+            const chatArea = document.getElementById('crisp-chat-area');
+            
+            if (checkbox.checked) {
+                // Hide overlay and show chat
+                overlay.style.display = 'none';
+                chatArea.style.display = 'block';
+                
+                // Initialize Crisp chat after verification
+                if (!window.CRISP_LOADED) {
+                    loadCrispChat();
+                    window.CRISP_LOADED = true;
+                }
+                
+                // Show Crisp chat widget
+                if (window.$crisp) {
+                    window.$crisp.push(["do", "chat:show"]);
+                }
+            } else {
+                // Show overlay and hide chat
+                overlay.style.display = 'flex';
+                chatArea.style.display = 'none';
+                
+                // Hide Crisp chat widget
+                if (window.$crisp) {
+                    window.$crisp.push(["do", "chat:hide"]);
+                }
+            }
+        }
+        
+        function loadCrispChat() {
+            (function() {
+                var d = document;
+                var s = d.createElement("script");
+                s.src = "https://client.crisp.chat/l.js";
+                s.async = 1;
+                d.getElementsByTagName("head")[0].appendChild(s);
+            })();
+        }
+        
+        // Configure Crisp after it loads
+        window.$crisp.push(["ready", function() {
+            // Start hidden until verification
+            window.$crisp.push(["do", "chat:hide"]);
+            
+            // Set custom configuration
+            window.$crisp.push(["set", "session:segments", [["client-portal"]]]);
+            window.$crisp.push(["set", "user:company", "Dustyomatic Client"]);
+        }]);
+    </script>
+</body>
+</html>

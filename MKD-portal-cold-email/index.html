@@ -147,10 +147,88 @@
             color: #666;
         }
 
-        @media (max-width: 768px) {
-            .portal-title {
-                font-size: 2rem;
-            }
+        .embedded-chat {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .system-message {
+            background: #e8f4fd;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            margin-left: 2rem;
+            text-align: right;
+        }
+
+        .agent-message {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            margin-right: 2rem;
+            border: 1px solid #ddd;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 1rem;
+            gap: 0.5rem;
+            background: white;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .chat-send-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .chat-send-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .chat-send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -185,10 +263,22 @@
 
                 <div id="chatSection" class="chat-section">
                     <h3 class="chat-title">Client Support Chat</h3>
-                    <div class="chat-notice">
-                        <strong>Chat Support Available:</strong> Connect with our automation specialists for workflow assistance, troubleshooting, and updates on your n8n automations.
+                    <div class="chat-notice" id="chatNotice">
+                        <strong>Chat Support Available:</strong> <span id="dynamicMessage">Loading support information...</span>
                     </div>
-                    <!-- Tawk.to chat widget will appear here automatically once verification is complete -->
+                    
+                    <!-- Custom Embedded Chat Interface -->
+                    <div class="embedded-chat">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="system-message">
+                                <strong>Support Team:</strong> Hello! How can we help you with your automation workflows today?
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chatInput" placeholder="Type your message..." class="chat-input">
+                            <button onclick="sendMessage()" class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -203,26 +293,8 @@
     <!-- Cloudflare Turnstile Script -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
-    <!-- Tawk.to Chat Widget -->
-    <script type="text/javascript">
-    var Tawk_API = Tawk_API || {};
-    var Tawk_LoadStart = new Date();
-    
-    // Initially hide Tawk widget
-    Tawk_API.onLoad = function(){
-        Tawk_API.hideWidget();
-    };
-
-    (function(){
-        var s1 = document.createElement("script");
-        var s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/68d332e759e35019234b11a0/1j5sftlrl';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin','*');
-        s0.parentNode.insertBefore(s1, s0);
-    })();
-    </script>
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <script>
         // Verification functionality
@@ -238,10 +310,8 @@
             document.getElementById('statusMessage').className = 'status-message status-verified';
             document.getElementById('chatSection').classList.add('enabled');
             
-            // Show Tawk widget
-            if (typeof Tawk_API !== 'undefined') {
-                Tawk_API.showWidget();
-            }
+            // Load dynamic support message
+            loadDynamicMessage();
             
             // Send verification event to n8n (optional)
             fetch('YOUR_N8N_WEBHOOK_URL', {
@@ -270,11 +340,109 @@
             document.getElementById('statusMessage').textContent = 'Verification expired. Please complete verification again.';
             document.getElementById('statusMessage').className = 'status-message status-pending';
             document.getElementById('chatSection').classList.remove('enabled');
-            
-            if (typeof Tawk_API !== 'undefined') {
-                Tawk_API.hideWidget();
+        }
+
+        // Custom chat functionality
+        async function loadDynamicMessage() {
+            try {
+                const response = await fetch('YOUR_N8N_WEBHOOK_URL', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: 'get_support_message',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.supportMessage) {
+                        document.getElementById('dynamicMessage').textContent = data.supportMessage;
+                    } else {
+                        // Fallback message
+                        document.getElementById('dynamicMessage').textContent = 'Connect with our automation specialists for workflow assistance, troubleshooting, and updates on your n8n automations.';
+                    }
+                } else {
+                    // Fallback message
+                    document.getElementById('dynamicMessage').textContent = 'Connect with our automation specialists for workflow assistance, troubleshooting, and updates on your n8n automations.';
+                }
+            } catch (error) {
+                console.error('Failed to load dynamic message:', error);
+                // Fallback message
+                document.getElementById('dynamicMessage').textContent = 'Connect with our automation specialists for workflow assistance, troubleshooting, and updates on your n8n automations.';
             }
         }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            
+            // Clear input
+            input.value = '';
+            
+            // Send to n8n webhook
+            sendToN8n(message);
+        }
+
+        function addMessageToChat(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            
+            if (sender === 'user') {
+                messageDiv.className = 'user-message';
+                messageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+            } else {
+                messageDiv.className = 'agent-message';
+                messageDiv.innerHTML = `<strong>Support:</strong> ${message}`;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendToN8n(message) {
+            try {
+                const response = await fetch('YOUR_N8N_WEBHOOK_URL', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: 'chat_message',
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        sessionId: 'client_' + Date.now() // Simple session ID
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.reply) {
+                        // Add bot response to chat
+                        setTimeout(() => {
+                            addMessageToChat(data.reply, 'agent');
+                        }, 500); // Small delay to simulate typing
+                    }
+                } else {
+                    addMessageToChat('Sorry, I\'m having trouble connecting right now. Please try again.', 'agent');
+                }
+            } catch (error) {
+                console.error('N8N webhook error:', error);
+                addMessageToChat('Connection error. Please check your internet connection and try again.', 'agent');
+            }
+        }
+
+        // Enter key to send message
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
     </script>
 </body>
 </html>

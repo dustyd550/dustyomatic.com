@@ -332,7 +332,11 @@
             <h3 class="modal-title">Verify Access</h3>
             <div class="captcha-container">
                 <!-- Cloudflare Turnstile Widget -->
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB29ZstNTaoSmjdh"></div>
+                <div class="cf-turnstile" 
+                     data-sitekey="0x4AAAAAAB29ZstNTaoSmjdh"
+                     data-callback="onTurnstileSuccess"
+                     data-error-callback="onTurnstileError"
+                     data-expired-callback="onTurnstileExpired"></div>
             </div>
             <div class="modal-buttons">
                 <button class="modal-btn btn-cancel" onclick="closeVerificationModal()">Cancel</button>
@@ -358,7 +362,7 @@
         var s1 = document.createElement("script");
         var s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
-        s1.src = 'https://embed.tawk.to/68d332e759e35019234b11a0/1j5sftlrl';
+        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_WIDGET_ID';
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin','*');
         s0.parentNode.insertBefore(s1, s0);

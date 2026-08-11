@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Calendar Display</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1200px;
+    height: 1600px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  img {
+    display: block;
+    width: 1200px;
+    height: 1600px;
+    object-fit: contain;
+    background: #ffffff;
+  }
+</style>
+</head>
+<body>
+<img id="slide" src="" alt="">
+<script>
+(async function () {
+  // --- config ---
+  const CAL_FOLDER = 'images/calendar';
+  const FUN_FOLDER = 'images/fun';
+  const INTERVAL_MS = 5 * 60 * 1000;   // 5 min/image -- also set this as the
+                                        // device's own refresh interval in SenseCraft HMI
+  const CAL_FALLBACK = ['today.svg', 'week.svg', 'month.svg']; // used only if the API call fails
+  const FUN_FALLBACK = Array.from({ length: 10 }, (_, i) =>
+    `fun-${String(i + 1).padStart(2, '0')}.jpg`
+  ); // fun-01.jpg ... fun-10.jpg, used only if the API call fails
+
+  // Hardcoded: dustyomatic.com is a custom domain (see the repo's CNAME file),
+  // so guessing owner/repo from location.hostname would be wrong here.
+  const OWNER = 'dustyd550';
+  const REPO = 'dustyomatic.com';
+
+  const img = document.getElementById('slide');
+
+  async function listFiles(folder, fallback) {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${folder}`);
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      const names = data
+        .filter(f => f.type === 'file' && /\.(svg|png|jpe?g|webp)$/i.test(f.name))
+        .map(f => f.name)
+        .sort();
+      return names.length ? names : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  // Alternates calendar / fun: even step -> calendar, odd step -> fun.
+  // Each side has its own pair-counter, so calendar loops every 3 steps
+  // while fun keeps advancing and only wraps every 10.
+  function pickSrc(step, calFiles, funFiles) {
+    const isCal = step % 2 === 0;
+    const pairIndex = Math.floor(step / 2);
+
+    const primary = isCal ? { folder: CAL_FOLDER, files: calFiles } : { folder: FUN_FOLDER, files: funFiles };
+    if (primary.files.length) {
+      return `${primary.folder}/${primary.files[pairIndex % primary.files.length]}?t=${step}`;
+    }
+    // if one side has nothing to show yet, fall back to the other rather than showing blank
+    const alt = isCal ? { folder: FUN_FOLDER, files: funFiles } : { folder: CAL_FOLDER, files: calFiles };
+    if (alt.files.length) {
+      return `${alt.folder}/${alt.files[pairIndex % alt.files.length]}?t=${step}`;
+    }
+    return null;
+  }
+
+  function showImage(calFiles, funFiles) {
+    const step = Math.floor(Date.now() / INTERVAL_MS);
+    const src = pickSrc(step, calFiles, funFiles);
+    if (src) img.src = src;
+  }
+
+  const [calFiles, funFiles] = await Promise.all([
+    listFiles(CAL_FOLDER, CAL_FALLBACK),
+    listFiles(FUN_FOLDER, FUN_FALLBACK)
+  ]);
+  showImage(calFiles, funFiles);
+
+  // Belt-and-suspenders: if the device does keep this page alive between
+  // refreshes, keep advancing locally too -- harmless either way.
+  setInterval(() => showImage(calFiles, funFiles), INTERVAL_MS);
+})();
+</script>
+</body>
+</html>
